@@ -57,9 +57,9 @@ namespace ReportingSubsystem.Areas.Identity.Pages.Account
 
         public async Task OnGetAsync(string returnUrl = null)
         {
-            if (!string.IsNullOrEmpty(ErrorMessage))
+            if (User.Identity.IsAuthenticated)
             {
-                ModelState.AddModelError(string.Empty, ErrorMessage);
+                Response.Redirect("/Home");
             }
 
             returnUrl = returnUrl ?? Url.Content("~/");
