@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" id="Definitions_0m76xdq" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.2.0">
+  <bpmn:collaboration id="ReportTypeChoice">
+    <bpmn:participant id="ReportCreationPool" name="Формирование отчета" processRef="Process_0vdmz67" />
+    <bpmn:participant id="DataPreparementPool" name="Подготовка данных" />
+    <bpmn:messageFlow id="Flow_1rd7h0f" sourceRef="prepareReportData" targetRef="DataPreparementPool" />
+    <bpmn:messageFlow id="Flow_10ja66z" sourceRef="DataPreparementPool" targetRef="Event_1d8ildn" />
+  </bpmn:collaboration>
+  <bpmn:process id="Process_0vdmz67" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1" name="Начало формирования отчета">
+      <bpmn:outgoing>Flow_05f9zxg</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_0na007c" sourceRef="ApproveReport" targetRef="Event_0efhpqk" />
+    <bpmn:sequenceFlow id="Flow_0z9oe6y" sourceRef="MakeReport" targetRef="ApproveReport" />
+    <bpmn:sequenceFlow id="Flow_1pll764" sourceRef="Event_1d8ildn" targetRef="MakeReport" />
+    <bpmn:sequenceFlow id="Flow_054hsq3" sourceRef="prepareReportData" targetRef="Event_1d8ildn" />
+    <bpmn:sequenceFlow id="Flow_0czp828" sourceRef="MakeReportStructure" targetRef="prepareReportData" />
+    <bpmn:sequenceFlow id="Flow_05f9zxg" sourceRef="StartEvent_1" targetRef="ReportTypeChoiceSubp" />
+    <bpmn:sequenceFlow id="Flow_1rr62l8" sourceRef="ReportTypeChoiceSubp" targetRef="MakeReportStructure" />
+    <bpmn:intermediateCatchEvent id="Event_1d8ildn" name="Данные от сервиса поступили">
+      <bpmn:incoming>Flow_054hsq3</bpmn:incoming>
+      <bpmn:outgoing>Flow_1pll764</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_1yje1ci" messageRef="Message_1ueve5i" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:serviceTask id="MakeReport" name="Формирование отчета" camunda:type="external" camunda:topic="makeReport">
+      <bpmn:incoming>Flow_1pll764</bpmn:incoming>
+      <bpmn:outgoing>Flow_0z9oe6y</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:userTask id="ApproveReport" name="Просмотр отчета">
+      <bpmn:incoming>Flow_0z9oe6y</bpmn:incoming>
+      <bpmn:outgoing>Flow_0na007c</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="Event_0efhpqk" name="Отчет сформирован">
+      <bpmn:incoming>Flow_0na007c</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sendTask id="prepareReportData" name="Подготовка данных для формируемого отчета" camunda:type="external" camunda:topic="prepareReportData">
+      <bpmn:incoming>Flow_0czp828</bpmn:incoming>
+      <bpmn:outgoing>Flow_054hsq3</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:subProcess id="ReportTypeChoiceSubp" name="Подпроцесс выбора типа отчета">
+      <bpmn:incoming>Flow_05f9zxg</bpmn:incoming>
+      <bpmn:outgoing>Flow_1rr62l8</bpmn:outgoing>
+      <bpmn:startEvent id="SubpStartEvent" name="Начало выбора типа отчета">
+        <bpmn:outgoing>Flow_03ex50i</bpmn:outgoing>
+      </bpmn:startEvent>
+      <bpmn:sequenceFlow id="Flow_03ex50i" sourceRef="SubpStartEvent" targetRef="CheckAccess" />
+      <bpmn:dataObjectReference id="ReportsList" name="Список доступных отчетов" dataObjectRef="DataObject_0w1mqz5" />
+      <bpmn:dataObject id="DataObject_0w1mqz5" />
+      <bpmn:sequenceFlow id="Flow_1mx6h8q" sourceRef="CheckAccess" targetRef="ChooseReportsListAccordingAccess" />
+      <bpmn:sequenceFlow id="Flow_12onhn1" sourceRef="ChooseReportsListAccordingAccess" targetRef="ConfigReport" />
+      <bpmn:scriptTask id="CheckAccess" name="Проверка прав доступа">
+        <bpmn:incoming>Flow_03ex50i</bpmn:incoming>
+        <bpmn:outgoing>Flow_1mx6h8q</bpmn:outgoing>
+        <bpmn:script>print("check access")</bpmn:script>
+      </bpmn:scriptTask>
+      <bpmn:userTask id="ChooseReportsListAccordingAccess" name="Выбор типа отчета в соответствии с правами доступа">
+        <bpmn:extensionElements>
+          <camunda:formData>
+            <camunda:formField id="FormField_1" label="label_formfield1" type="string" defaultValue="0" />
+          </camunda:formData>
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_1mx6h8q</bpmn:incoming>
+        <bpmn:outgoing>Flow_12onhn1</bpmn:outgoing>
+        <bpmn:property id="Property_1555c9h" name="__targetRef_placeholder" />
+        <bpmn:dataInputAssociation id="DataInputAssociation_1jel4vi">
+          <bpmn:sourceRef>ReportsList</bpmn:sourceRef>
+          <bpmn:targetRef>Property_1555c9h</bpmn:targetRef>
+        </bpmn:dataInputAssociation>
+      </bpmn:userTask>
+      <bpmn:userTask id="ConfigReport" name="Конфигурирование параметров отчета">
+        <bpmn:incoming>Flow_12onhn1</bpmn:incoming>
+        <bpmn:outgoing>Flow_16e35aw</bpmn:outgoing>
+      </bpmn:userTask>
+      <bpmn:sequenceFlow id="Flow_16e35aw" sourceRef="ConfigReport" targetRef="SubpEndEvent" />
+      <bpmn:endEvent id="SubpEndEvent" name="Конец формирования типа отчета">
+        <bpmn:incoming>Flow_16e35aw</bpmn:incoming>
+      </bpmn:endEvent>
+    </bpmn:subProcess>
+    <bpmn:serviceTask id="MakeReportStructure" name="Формирование структуры отчета" camunda:type="external" camunda:topic="makeStructureType">
+      <bpmn:incoming>Flow_1rr62l8</bpmn:incoming>
+      <bpmn:outgoing>Flow_0czp828</bpmn:outgoing>
+      <bpmn:property id="Property_1pw6t9j" name="__targetRef_placeholder" />
+      <bpmn:dataInputAssociation id="DataInputAssociation_1xmd2k7">
+        <bpmn:sourceRef>ReportTemplates</bpmn:sourceRef>
+        <bpmn:targetRef>Property_1pw6t9j</bpmn:targetRef>
+      </bpmn:dataInputAssociation>
+    </bpmn:serviceTask>
+    <bpmn:dataObjectReference id="ReportTemplates" name="Шаблоны зарегистрированных в АС отчетов" dataObjectRef="DataObject_1ug0p82" />
+    <bpmn:dataObject id="DataObject_1ug0p82" />
+  </bpmn:process>
+  <bpmn:message id="Message_1af08tv" name="reportConfigMesage" />
+  <bpmn:message id="Message_021x7oz" />
+  <bpmn:message id="Message_1ueve5i" name="Message_164m9j8" />
+  <bpmn:message id="Message_0rskkzf" name="Message_2bm398j" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="ReportTypeChoice">
+      <bpmndi:BPMNShape id="Participant_1fzr02a_di" bpmnElement="ReportCreationPool" isHorizontal="true">
+        <dc:Bounds x="160" y="77" width="1890" height="578" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1rr62l8_di" bpmnElement="Flow_1rr62l8">
+        <di:waypoint x="1070" y="307" />
+        <di:waypoint x="1160" y="307" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_05f9zxg_di" bpmnElement="Flow_05f9zxg">
+        <di:waypoint x="258" y="307" />
+        <di:waypoint x="340" y="307" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0czp828_di" bpmnElement="Flow_0czp828">
+        <di:waypoint x="1260" y="307" />
+        <di:waypoint x="1345" y="307" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_054hsq3_di" bpmnElement="Flow_054hsq3">
+        <di:waypoint x="1445" y="307" />
+        <di:waypoint x="1522" y="307" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1pll764_di" bpmnElement="Flow_1pll764">
+        <di:waypoint x="1558" y="307" />
+        <di:waypoint x="1630" y="307" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0z9oe6y_di" bpmnElement="Flow_0z9oe6y">
+        <di:waypoint x="1730" y="307" />
+        <di:waypoint x="1810" y="307" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0na007c_di" bpmnElement="Flow_0na007c">
+        <di:waypoint x="1910" y="307" />
+        <di:waypoint x="1982" y="307" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="222" y="289" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="201" y="332" width="78" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1nzamk3_di" bpmnElement="Event_1d8ildn">
+        <dc:Bounds x="1522" y="289" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1513" y="230" width="54" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0a3wfq3_di" bpmnElement="MakeReport">
+        <dc:Bounds x="1630" y="267" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0dwn0s7_di" bpmnElement="ApproveReport">
+        <dc:Bounds x="1810" y="267" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0efhpqk_di" bpmnElement="Event_0efhpqk">
+        <dc:Bounds x="1982" y="289" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1965" y="332" width="71" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1phfkqk_di" bpmnElement="prepareReportData">
+        <dc:Bounds x="1345" y="267" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0wsc0k4_di" bpmnElement="ReportTypeChoiceSubp" isExpanded="true">
+        <dc:Bounds x="340" y="150" width="730" height="330" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_16e35aw_di" bpmnElement="Flow_16e35aw">
+        <di:waypoint x="900" y="307" />
+        <di:waypoint x="1002" y="307" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_12onhn1_di" bpmnElement="Flow_12onhn1">
+        <di:waypoint x="730" y="307" />
+        <di:waypoint x="800" y="307" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1mx6h8q_di" bpmnElement="Flow_1mx6h8q">
+        <di:waypoint x="550" y="307" />
+        <di:waypoint x="630" y="307" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_03ex50i_di" bpmnElement="Flow_03ex50i">
+        <di:waypoint x="416" y="307" />
+        <di:waypoint x="450" y="307" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_0anhuob_di" bpmnElement="SubpStartEvent">
+        <dc:Bounds x="380" y="289" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="358" y="332" width="81" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0seygwr_di" bpmnElement="CheckAccess">
+        <dc:Bounds x="450" y="267" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1am7ezg_di" bpmnElement="SubpEndEvent">
+        <dc:Bounds x="1002" y="289" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="981" y="332" width="78" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0k7ji3e_di" bpmnElement="ConfigReport">
+        <dc:Bounds x="800" y="267" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_14rlrs5_di" bpmnElement="ChooseReportsListAccordingAccess">
+        <dc:Bounds x="630" y="267" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataObjectReference_1ew0l52_di" bpmnElement="ReportsList">
+        <dc:Bounds x="665" y="375" width="36" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="656" y="432" width="54" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_12ekrlc_di" bpmnElement="MakeReportStructure">
+        <dc:Bounds x="1160" y="267" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataObjectReference_1p67p1y_di" bpmnElement="ReportTemplates">
+        <dc:Bounds x="1192" y="385" width="36" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1165" y="440" width="89" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Participant_0h3b68w_di" bpmnElement="DataPreparementPool" isHorizontal="true" bioc:stroke="rgb(30, 136, 229)" bioc:fill="rgb(187, 222, 251)">
+        <dc:Bounds x="150" y="700" width="1890" height="67" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="DataInputAssociation_1jel4vi_di" bpmnElement="DataInputAssociation_1jel4vi">
+        <di:waypoint x="682" y="375" />
+        <di:waypoint x="681" y="347" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataInputAssociation_1xmd2k7_di" bpmnElement="DataInputAssociation_1xmd2k7">
+        <di:waypoint x="1210" y="380" />
+        <di:waypoint x="1210" y="347" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1rd7h0f_di" bpmnElement="Flow_1rd7h0f">
+        <di:waypoint x="1395" y="347" />
+        <di:waypoint x="1395" y="700" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_10ja66z_di" bpmnElement="Flow_10ja66z">
+        <di:waypoint x="1540" y="700" />
+        <di:waypoint x="1540" y="325" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
