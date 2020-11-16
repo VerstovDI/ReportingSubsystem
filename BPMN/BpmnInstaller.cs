@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Camunda.Worker;
 
 namespace ReportingSubsystem.BPMN
-{
+{ 
     public static class BpmnInstaller
-    {   /*
+    {   
         public static IServiceCollection AddCamunda(this IServiceCollection services, string camundaRestApiUri)
         {
             services.AddSingleton(_ => new BpmnService(camundaRestApiUri));
             services.AddHostedService<BpmnProcessDeployService>();
-
             services.AddCamundaWorker(options =>
             {
                 options.BaseUri = new Uri(camundaRestApiUri);
@@ -21,6 +21,6 @@ namespace ReportingSubsystem.BPMN
             .AddHandler<ReportChoiceHandler>();
             
             return services;
-        }*/
+        }
     }
 }

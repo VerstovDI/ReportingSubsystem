@@ -13,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ReportingSubsystem.Areas.Identity.Data;
+using ReportingSubsystem.BPMN;
 
 namespace ReportingSubsystem
 {
@@ -25,7 +26,7 @@ namespace ReportingSubsystem
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
+        // Here we add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             /* services.AddDbContext<ApplicationDbContext>(options =>
@@ -36,6 +37,14 @@ namespace ReportingSubsystem
                  .AddEntityFrameworkStores<ApplicationDbContext>();*/
             services.AddControllersWithViews();
             services.AddRazorPages();
+            // services.AddMvc();
+
+            /* var appSettingsSection = Configuration.GetSection("AppSettings");
+             * services.Configure<AppSettings>(appSettingsSection);
+             * var appSettings = appSettingsSection.Get<AppSettings>();
+             * services.AddCamunda(appSettings.CamundaRestApiUri);
+            */
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
