@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using Camunda.Worker;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ReportingSubsystem.BPMN
 { 
@@ -13,12 +13,12 @@ namespace ReportingSubsystem.BPMN
         {
             services.AddSingleton(_ => new BpmnService(camundaRestApiUri));
             services.AddHostedService<BpmnProcessDeployService>();
+            
             services.AddCamundaWorker(options =>
             {
                 options.BaseUri = new Uri(camundaRestApiUri);
                 options.WorkerCount = 1;
-            })
-            .AddHandler<ReportChoiceHandler>();
+            }).AddHandler<ReportChoiceHandler>();
             
             return services;
         }

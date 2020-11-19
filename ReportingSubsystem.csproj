@@ -6,7 +6,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="BPMN\reports.bpmn" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="BPMN\reports.bpmn" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Camunda.Api.Client" Version="2.5.2" />
+    <PackageReference Include="Camunda.Worker" Version="0.10.0" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="3.1.9" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.9" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="3.1.9" />

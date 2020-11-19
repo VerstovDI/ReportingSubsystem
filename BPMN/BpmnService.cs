@@ -34,7 +34,7 @@ namespace ReportingSubsystem.BPMN
                     true,
                     null,
                     null,
-                    new ResourceDataContent(bpmnResourceStream, "ReportingSubsystem.BPMN.reports.bpmn"));
+                    new ResourceDataContent(bpmnResourceStream, "reports.bpmn"));
             }
             catch (Exception e)
             {
@@ -42,7 +42,7 @@ namespace ReportingSubsystem.BPMN
             }
         }
 
-        public async Task<string> StartProcessFor(Order order)
+        /*public async Task<string> StartProcessFor(Order order)
         {
             var processParams = new StartProcessInstance()
                 .SetVariable("orderId", VariableValue.FromObject(order.Id.Value.ToString()))
@@ -55,7 +55,7 @@ namespace ReportingSubsystem.BPMN
                 camunda.ProcessDefinitions.ByKey("Process_Hire_Hero").StartProcessInstance(processParams);
 
             return processStartResult.Id;
-        }
+        }*/
 
         public async Task<List<UserTaskInfo>> GetTasksForCandidateGroup(string group, string user)
         {
@@ -88,7 +88,7 @@ namespace ReportingSubsystem.BPMN
             return task;
         }
 
-        public async Task<UserTaskInfo> CompleteTask(string taskId, Order order)
+        /*public async Task<UserTaskInfo> CompleteTask(string taskId, Order order)
         {
             var task = await camunda.UserTasks[taskId].Get();
             var completeTask = new CompleteTask()
@@ -104,7 +104,7 @@ namespace ReportingSubsystem.BPMN
                 BusinessKey = order.Id.Value.ToString(),
                 MessageName = "Message_InvoicePaid"
             });
-        }
+        }*/
 
         public async Task CleanupProcessInstances()
         {

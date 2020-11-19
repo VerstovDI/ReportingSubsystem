@@ -39,12 +39,10 @@ namespace ReportingSubsystem
             services.AddRazorPages();
             // services.AddMvc();
 
-            /* var appSettingsSection = Configuration.GetSection("AppSettings");
-             * services.Configure<AppSettings>(appSettingsSection);
-             * var appSettings = appSettingsSection.Get<AppSettings>();
-             * services.AddCamunda(appSettings.CamundaRestApiUri);
-            */
-
+            var appSettingsSection = Configuration.GetSection("AppSettings");
+            services.Configure<AppSettings>(appSettingsSection);
+            var appSettings = appSettingsSection.Get<AppSettings>();
+            services.AddCamunda(appSettings.CamundaRestApiUri);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
