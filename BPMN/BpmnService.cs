@@ -8,12 +8,17 @@ using Camunda.Api.Client.Message;
 using Camunda.Api.Client.ProcessDefinition;
 using Camunda.Api.Client.ProcessInstance;
 using Camunda.Api.Client.UserTask;
+using ReportingSubsystem.Models;
 
 namespace ReportingSubsystem.BPMN
 {
-    public class BpmnService
+    public class BpmnService : IServiceProvider
     { 
         private readonly CamundaClient camunda;
+
+        public BpmnService()
+        {
+        }
 
         public BpmnService(string camundaRestApiUri)
         {
@@ -42,43 +47,19 @@ namespace ReportingSubsystem.BPMN
             }
         }
 
-        /*public async Task<string> StartProcessFor(Order order)
+        public async Task<string> StartProcessFor(Report report)
         {
             var processParams = new StartProcessInstance()
-                .SetVariable("orderId", VariableValue.FromObject(order.Id.Value.ToString()))
-                .SetVariable("orderStatus", VariableValue.FromObject(order.Status.ToString()))
-                .SetVariable("customerCode", VariableValue.FromObject(order.Customer.Code));
+                .SetVariable("reportId", VariableValue.FromObject(report.ReportId.ToString()))
+                .SetVariable("reportName", VariableValue.FromObject(report.ReportName.ToString()))
+                .SetVariable("reportStatus", VariableValue.FromObject(report.ReportStatus.ToString()))
+                .SetVariable("reportDate", VariableValue.FromObject(report.ReportDateAndTime.ToString()));
 
-            processParams.BusinessKey = order.Id.Value.ToString();
+            processParams.BusinessKey = report.ReportId.ToString();
 
             var processStartResult = await
-                camunda.ProcessDefinitions.ByKey("Process_Hire_Hero").StartProcessInstance(processParams);
-
+                camunda.ProcessDefinitions.ByKey("Report_Creation_Def_Key").StartProcessInstance(processParams);
             return processStartResult.Id;
-        }*/
-
-        public async Task<List<UserTaskInfo>> GetTasksForCandidateGroup(string group, string user)
-        {
-            var groupTaskQuery = new TaskQuery
-            {
-                ProcessDefinitionKeys = { "Process_Hire_Hero" },
-                CandidateGroup = group
-            };
-            var groupTasks = await camunda.UserTasks.Query(groupTaskQuery).List();
-
-            if (user != null)
-            {
-                var userTaskQuery = new TaskQuery
-                {
-                    ProcessDefinitionKeys = { "Process_Hire_Hero" },
-                    Assignee = user
-                };
-                var userTasks = await camunda.UserTasks.Query(userTaskQuery).List();
-
-                groupTasks.AddRange(userTasks);
-            }
-
-            return groupTasks;
         }
 
         public async Task<UserTaskInfo> ClaimTask(string taskId, string user)
@@ -88,30 +69,12 @@ namespace ReportingSubsystem.BPMN
             return task;
         }
 
-        /*public async Task<UserTaskInfo> CompleteTask(string taskId, Order order)
-        {
-            var task = await camunda.UserTasks[taskId].Get();
-            var completeTask = new CompleteTask()
-                .SetVariable("orderStatus", VariableValue.FromObject(order.Status.ToString()));
-            await camunda.UserTasks[taskId].Complete(completeTask);
-            return task;
-        }
-
-        public async Task SendMessageInvoicePaid(Order order)
-        {
-            await camunda.Messages.DeliverMessage(new CorrelationMessage
-            {
-                BusinessKey = order.Id.Value.ToString(),
-                MessageName = "Message_InvoicePaid"
-            });
-        }*/
-
         public async Task CleanupProcessInstances()
         {
             var instances = await camunda.ProcessInstances
                 .Query(new ProcessInstanceQuery
                 {
-                    ProcessDefinitionKey = "Process_Hire_Hero"
+                    ProcessDefinitionKey = "Report_Creation_Def_Key"
                 })
                 .List();
 
@@ -123,5 +86,14 @@ namespace ReportingSubsystem.BPMN
                 });
             }
         }
+
+        public object GetService(Type serviceType)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public interface IBpmnService
+    {
     }
 }

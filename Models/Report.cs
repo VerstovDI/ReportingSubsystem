@@ -7,9 +7,17 @@ namespace ReportingSubsystem.Models
 {
     public class Report
     {
-        public int id { get; set; }
-        public string name { get; set; }
-        public DateTime creationDateAndTime { get; set; }
+        public int ReportId { get; set; }
+        public string ReportName { get; set; }
+        public DateTime ReportDateAndTime { get; set; }
+        public string ReportStatus { get; set; }
+
         //public DataSource dataSource { get; set; } // ссылка на объект, поставляющий данные для отчета
+        public Report(int id, string name, DateTime creationDateAndTime, string status) {
+            this.ReportId = id;
+            this.ReportName = name;
+            this.ReportDateAndTime = creationDateAndTime;
+            this.ReportStatus = status;
+        } 
     }
 }

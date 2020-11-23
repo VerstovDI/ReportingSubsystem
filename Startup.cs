@@ -37,6 +37,7 @@ namespace ReportingSubsystem
                  .AddEntityFrameworkStores<ApplicationDbContext>();*/
             services.AddControllersWithViews();
             services.AddRazorPages();
+            services.AddTransient<BpmnService>();
             // services.AddMvc();
 
             var appSettingsSection = Configuration.GetSection("AppSettings");

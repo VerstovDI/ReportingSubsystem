@@ -48,11 +48,6 @@
       <bpmn:dataObject id="DataObject_0w1mqz5" />
       <bpmn:sequenceFlow id="Flow_1mx6h8q" sourceRef="CheckAccess" targetRef="ChooseReportsListAccordingAccess" />
       <bpmn:sequenceFlow id="Flow_12onhn1" sourceRef="ChooseReportsListAccordingAccess" targetRef="ConfigReport" />
-      <bpmn:scriptTask id="CheckAccess" name="Проверка прав доступа">
-        <bpmn:incoming>Flow_03ex50i</bpmn:incoming>
-        <bpmn:outgoing>Flow_1mx6h8q</bpmn:outgoing>
-        <bpmn:script>print("check access")</bpmn:script>
-      </bpmn:scriptTask>
       <bpmn:userTask id="ChooseReportsListAccordingAccess" name="Выбор типа отчета в соответствии с правами доступа">
         <bpmn:extensionElements>
           <camunda:formData>
@@ -75,6 +70,10 @@
       <bpmn:endEvent id="SubpEndEvent" name="Конец формирования типа отчета">
         <bpmn:incoming>Flow_16e35aw</bpmn:incoming>
       </bpmn:endEvent>
+      <bpmn:serviceTask id="CheckAccess" name="CheckAccess" camunda:type="external" camunda:topic="Topic_CheckAccess">
+        <bpmn:incoming>Flow_03ex50i</bpmn:incoming>
+        <bpmn:outgoing>Flow_1mx6h8q</bpmn:outgoing>
+      </bpmn:serviceTask>
     </bpmn:subProcess>
     <bpmn:serviceTask id="MakeReportStructure" name="Формирование структуры отчета" camunda:type="external" camunda:topic="makeStructureType">
       <bpmn:incoming>Flow_1rr62l8</bpmn:incoming>
@@ -177,8 +176,17 @@
           <dc:Bounds x="358" y="332" width="81" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0seygwr_di" bpmnElement="CheckAccess">
-        <dc:Bounds x="450" y="267" width="100" height="80" />
+      <bpmndi:BPMNShape id="DataObjectReference_1ew0l52_di" bpmnElement="ReportsList">
+        <dc:Bounds x="665" y="375" width="36" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="656" y="432" width="54" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_14rlrs5_di" bpmnElement="ChooseReportsListAccordingAccess">
+        <dc:Bounds x="630" y="267" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0k7ji3e_di" bpmnElement="ConfigReport">
+        <dc:Bounds x="800" y="267" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_1am7ezg_di" bpmnElement="SubpEndEvent">
         <dc:Bounds x="1002" y="289" width="36" height="36" />
@@ -186,17 +194,8 @@
           <dc:Bounds x="981" y="332" width="78" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0k7ji3e_di" bpmnElement="ConfigReport">
-        <dc:Bounds x="800" y="267" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_14rlrs5_di" bpmnElement="ChooseReportsListAccordingAccess">
-        <dc:Bounds x="630" y="267" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DataObjectReference_1ew0l52_di" bpmnElement="ReportsList">
-        <dc:Bounds x="665" y="375" width="36" height="50" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="656" y="432" width="54" height="40" />
-        </bpmndi:BPMNLabel>
+      <bpmndi:BPMNShape id="Activity_14fxgr2_di" bpmnElement="CheckAccess">
+        <dc:Bounds x="450" y="267" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_12ekrlc_di" bpmnElement="MakeReportStructure">
         <dc:Bounds x="1160" y="267" width="100" height="80" />
